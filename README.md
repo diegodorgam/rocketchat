@@ -4,7 +4,7 @@ Little toolset:
 
 ```
 su root
-apt-get update 
+apt-get update
 apt-get install wget curl htop sudo screen
 ```
 
@@ -42,16 +42,10 @@ Configure /etc/hosts and /etc/hostname:
 ```
 
 hostname:
-  
+
 ```
 m1.dorgam.it
 ```
-
-Repetir essas configurações nas 3 instancias.
-
-`reboot`  
-
- /etc/mongod.conf  
 
 ```
 sudo nano /etc/mongod.conf
@@ -65,6 +59,9 @@ replication:
 
 `sudo service mongod restart`  
 
+Repeat this configurations in all MongoDB instances, they must be able to read the same replSetName and to communicate with each other.
+
+Only in the PRIMARY instance, do the following:
 ```
 mongo
 > rs.initiate()
@@ -75,16 +72,17 @@ or the set",
         "me" : "rocket:27017",
         "ok" : 1
 }
- 
+
 001-rs:PRIMARY> rs.add("m2.dorgam.it:27017");
 001-rs:PRIMARY> rs.add("m3.dorgam.it:27017");
-``` 
+```
 
 ```
 echo 'export MONGO_OPLOG_URL=mongodb://localhost:27017/local' >> ~/.bashrc  
 source ~/.bashrc  
 ```
 
+Reboot your server and verify if everything is still working.
 
 ## Install NodeJs
 
@@ -117,7 +115,8 @@ sudo ROOT_URL=http://chat.dorgam.it/ \
     node main.js
 ```
 
-**Rocket.Chat Is Running!** faça o mesmo nos outros nódulos.
+**Rocket.Chat Is Running!**  
+Do the same with the other servers.
 
 ## Install Nginx
 
@@ -159,5 +158,39 @@ server {
 	}
 }
 ```
+**OR YOU CAN TRY A SIMPLEST WAY**
 
+```
+upstream chat.dorgam.it{
+  server chat1.dorgam.it;
+  server chat2.dorgam.it;
+}
+server {
+  listen 80;
+  server_name chat.dorgam.it;
+  error_log /var/log/nginx/rocket.error.log;
+
+  location / {
+    proxy_pass http://chat.dorgam.it;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $http_host;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forward-Proto http;
+    proxy_set_header X-Nginx-Proxy true;
+
+    proxy_redirect off;
+  }
+}
+
+```
 `service nginx restart`  
+
+## Enjoy =)
+
+This is a scalable installation of rocket.chat, that can guarantee no data loss and great performance for the service.
+
+If you get too much users, you can put more rocket servers in your load balancer. If you need more stability, you can check the mongoDB replSet oficial documentation.
