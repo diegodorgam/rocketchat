@@ -137,7 +137,7 @@ Repeat this configurations in all MongoDB instances, they must be able to read t
 
 NOW, **ONLY in the PRIMARY instance** (m1), you will do the following:
 
-```
+```javascript
 # mongo
 ...
 > rs.initiate()
@@ -156,7 +156,7 @@ If everything goes fine, you will get the `"ok" : 1` message, just like above, o
 
 `OK:1`! Lets put the other instances in the set:
  
-```
+```javascript
 001-rs:PRIMARY> rs.add("m2.dorgam.it:27017");
 001-rs:PRIMARY> rs.add("m3.dorgam.it:27017");
 ```
@@ -187,7 +187,7 @@ apt-get install -y nodejs
 
 Now lets set our enviroment variables:
 
-```
+```shell
 nano ~/.bashrc 
 
 ...
@@ -233,7 +233,7 @@ cd /opt/rocket/
 nano pm2.json
 ```
 
-```
+```json
 {
         "apps": [{
                 "name": "chat.dorgam.it",
@@ -371,7 +371,7 @@ Now, adjust the jitsi-meet screen changing the interface_config.js file:
 nano /usr/share/jitsi-meet/interface_config.js
 ```
 
-```
+```javascript
 var interfaceConfig = {
     CANVAS_EXTRA: 104,
     CANVAS_RADIUS: 0,
@@ -406,7 +406,7 @@ var interfaceConfig = {
 };
 
 ```
-> **ATTENTIO** JITSI videobridge uses the 10000 UDP port, it must be free so users can have a good experience in video conferences.   
+> **ATTENTION** JITSI videobridge uses the 10000 UDP port, it must be free so users can have a good experience in video conferences.   
 
 All done, now remember to set your Video Conference parameters in the Rocket.Chat Administration Area.
 
